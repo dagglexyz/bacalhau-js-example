@@ -1,28 +1,42 @@
-const { getClientId, submit, list, results, states, events } = require("@daggle/bacalhau-js");
+const {
+	getClientId,
+	submit,
+	list,
+	results,
+	states,
+	events,
+} = require("@daggle/bacalhau-js");
+const {
+	Payload,
+	Spec,
+	PublisherSpec,
+	StorageSpec,
+	Deal,
+	JobSpecDocker,
+} = require("@daggle/bacalhau-js/models");
 
 async function submitJob() {
-	let data = {
-		APIVersion: "V1beta1",
+	let data = new Payload({
 		ClientID: getClientId(),
-		Spec: {
-			Deal: {
-				Concurrency: 1,
-				Confidence: 0,
-				MinBids: 0,
-			},
-			DoNotTrack: false,
-			Docker: {
-				Entrypoint: ["echo", "Hello World!"],
-				Image: "ubuntu",
-			},
-			Engine: "Docker",
-			Language: {},
-			PublisherSpec: { Type: "Estuary" },
-			Timeout: 1800,
-			Verifier: "Noop",
-			Outputs: [{ Name: "outputs", StorageSource: "IPFS", path: "/outputs" }],
-		},
-	};
+		spec: new Spec({
+			deal: new Deal(),
+			docker: new JobSpecDocker({
+				image: "ubuntu",
+				entrypoint: ["echo", "Hello World!"],
+			}),
+			engine: "Docker",
+			publisher_spec: new PublisherSpec({ type: "Estuary" }),
+			timeout: 1800,
+			verifier: "Noop",
+			outputs: [
+				new StorageSpec({
+					path: "/outputs",
+					storage_source: "IPFS",
+					name: "outputs",
+				}),
+			],
+		}),
+	});
 
 	const response = await submit(data);
 	console.log(response);
@@ -34,7 +48,7 @@ async function listJobs() {
 }
 
 async function jobResults() {
-	const response = await results("3e84b2ad-9c47-430e-87eb-13e2b53cb051");
+	const response = await results("9dbf4df0-d803-4bb7-845b-2484eca2df1a");
 	console.log(response.results);
 }
 
@@ -43,10 +57,7 @@ async function jobStates() {
 	console.log(response);
 }
 
-
 async function jobEvents() {
 	const response = await events("3e84b2ad-9c47-430e-87eb-13e2b53cb051");
 	console.log(response);
 }
-
-jobEvents();
