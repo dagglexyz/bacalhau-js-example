@@ -1,4 +1,4 @@
-const { getClientId, submit, list, results, states } = require("@daggle/bacalhau-js");
+const { getClientId, submit, list, results, states, events } = require("@daggle/bacalhau-js");
 
 async function submitJob() {
 	let data = {
@@ -43,4 +43,10 @@ async function jobStates() {
 	console.log(response);
 }
 
-jobStates();
+
+async function jobEvents() {
+	const response = await events("3e84b2ad-9c47-430e-87eb-13e2b53cb051");
+	console.log(response);
+}
+
+jobEvents();
