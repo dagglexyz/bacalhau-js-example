@@ -19,10 +19,17 @@ async function submitJob() {
 	let data = new Payload({
 		ClientID: getClientId(),
 		spec: new Spec({
-			deal: new Deal(),
+			inputs: [
+				new StorageSpec({
+					CID: "bafybeichlwrt2kxm2nfxqk3yt642fojysazdbwmxw6s7kq4klncn5ysy3m",
+					StorageSource: "ipfs",
+					path: "/inputs",
+				}),
+			],
 			docker: new JobSpecDocker({
-				image: "ubuntu",
-				entrypoint: ["echo", "Hello World!"],
+				image: "node:alpine",
+				entrypoint: ["node", "code-1692670423978.js"],
+				working_directory: "/inputs",
 			}),
 			engine: "Docker",
 			publisher_spec: new PublisherSpec({ type: "Estuary" }),
@@ -61,3 +68,5 @@ async function jobEvents() {
 	const response = await events("3e84b2ad-9c47-430e-87eb-13e2b53cb051");
 	console.log(response);
 }
+
+submitJob();
